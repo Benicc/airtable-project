@@ -8,8 +8,9 @@ const Navbar = () => {
     if (session.status !== "authenticated") return
 
     return (
-        <div>
-        <nav className="bg-[rgb(59,102,163)] text-white py-4 pb-4">
+        <div className="py-12">
+        <div className="fixed top-0 left-0 z-50 shadow-md w-full">
+        <nav className="bg-[rgb(59,102,163)] text-white py-4">
         <div className="flex justify-between items-center">
             <div className="text-lg ml-4 font-light flex space-x-4 items-center">
                 <div className="flex justify-center item-center">
@@ -62,6 +63,7 @@ const Navbar = () => {
                     <path d="M12 15l-4.243-4.243 1.415-1.414L12 12.172l2.828-2.829 1.415 1.414z"></path> </g> </g></svg>
                 </div>
             </div>
+        </div>
         </div>
         </div>
     );

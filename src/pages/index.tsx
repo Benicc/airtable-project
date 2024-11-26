@@ -1,6 +1,8 @@
 import { signIn, signOut, useSession } from "next-auth/react";
+import Link from "next/link";
 import { useState } from "react";
 import Popup from "~/components/createBaseUI";
+
 
 export default function Home() {
   const session = useSession()
@@ -25,6 +27,12 @@ export default function Home() {
 
         )}
 
+        {user != null && (
+          <Link href="/base">
+            <button className="border p-2 text-xl">Test Base</button>
+          </Link>
+        )}
+
         {showPopup && (
           <Popup onClose={togglePopup}/>
         )}
@@ -32,7 +40,7 @@ export default function Home() {
         {user == null ? (
           <button onClick={() => void signIn()}className="border p-2 text-xl">Login</button>
           ):(
-            <button onClick={() => void signOut()}className="border p-2 text-xl">Log Out</button>
+              <button onClick={() => void signOut()} className="border p-2 text-xl">Log Out</button>
           )
         }
         
