@@ -7,15 +7,15 @@ import {
   buildHeaderGroups,
 } from '@tanstack/react-table';
 
-const initialData: Record<string, any>[] = [
-  { id: 1 },
-  { id: 2 },
-  { id: 3 },
-  { id: 4 },
-  { id: 5 },
+const initialData: Record<string, string>[] = [
+  { id: "1" },
+  { id: "2" },
+  { id: "3" },
+  { id: "4" },
+  { id: "5" },
 ];
 
-const columns: ColumnDef<Record<string, any>>[] = [
+const columns: ColumnDef<Record<string, string>>[] = [
   {
     accessorKey: 'id',
     header: 'ID',
