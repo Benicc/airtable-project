@@ -50,7 +50,7 @@ const Spreadsheet = () => {
 
 
   const newRow = () => {
-    const newRowData: Record<string, any> = {};
+    const newRowData: Record<string, string> = {};
 
     // Add default values for each column in the new row
     columns.forEach((col) => {
@@ -65,7 +65,7 @@ const Spreadsheet = () => {
 
 
   
-  const handleCellEdit = (rowIndex: number, columnId: string, value: any) => {
+  const handleCellEdit = (rowIndex: number, columnId: string, value: string) => {
     setData((old) =>
       old.map((row, index) => {
         if (index === rowIndex) {
