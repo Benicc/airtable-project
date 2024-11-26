@@ -37,7 +37,8 @@ const config = {
         }
       }
     ],
-    "@typescript-eslint/prefer-for-of": "off" // Add this line to disable the rule
+    "@typescript-eslint/prefer-for-of": "off", // Add this line to disable the rule
+    "@typescript-eslint/prefer-optional-chain": "off"
   }
 }
 module.exports = config;
