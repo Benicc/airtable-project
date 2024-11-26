@@ -36,7 +36,8 @@ const config = {
           "attributes": false
         }
       }
-    ]
+    ],
+    "@typescript-eslint/prefer-for-of": "off" // Add this line to disable the rule
   }
 }
 module.exports = config;
