@@ -15,6 +15,7 @@ const initialData: Record<string, string>[] = [
   { id: "5" },
 ];
 
+//fix for commit
 const columns: ColumnDef<Record<string, string>>[] = [
   {
     accessorKey: 'id',
