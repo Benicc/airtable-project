@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 
 type DropdownProps = {
-  options: { label: string; onClick: (rowId: String) => void }[]; // Each option has a label and a function
+  options: { label: string; onClick: (rowId: string) => void }[]; // Each option has a label and a function
   text: string;
-  rowId: String;
+  rowId: string;
 };
 
 const DropDownTwo: React.FC<DropdownProps> = ({ options, text, rowId}) => {

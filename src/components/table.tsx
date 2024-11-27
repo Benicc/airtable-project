@@ -201,7 +201,7 @@ const Spreadsheet = () => {
   };
 
 
-  const delRow = (rowId: String) => {
+  const delRow = (rowId: string) => {
 
     // Add the new row to the data state
     setData((prevData) => {
@@ -216,7 +216,7 @@ const Spreadsheet = () => {
   };
 
   const options = [
-    { label: 'Delete Row', onClick: (rowId: String) => {delRow(rowId)}},
+    { label: 'Delete Row', onClick: (rowId: string) => {delRow(rowId)}},
   ];
 
   return (
