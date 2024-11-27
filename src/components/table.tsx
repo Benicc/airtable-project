@@ -6,20 +6,23 @@ import {
   getCoreRowModel,
   buildHeaderGroups,
 } from '@tanstack/react-table';
+import Dropdown from './dropdown';
+import DropDownTwo from './dropdownTwo';
+import { v4 as uuidv4 } from 'uuid';
 
 const initialData: Record<string, string>[] = [
-  { id: "1" },
-  { id: "2" },
-  { id: "3" },
-  { id: "4" },
-  { id: "5" },
+  { uid: String(uuidv4()) },
+  { uid: String(uuidv4()) },
+  { uid: String(uuidv4()) },
+  { uid: String(uuidv4()) },
+  { uid: String(uuidv4()) },
 ];
 
 //fix for commit
 const columns: ColumnDef<Record<string, string>>[] = [
   {
-    accessorKey: 'id',
-    header: 'ID',
+    accessorKey: 'uid',
+    header: '',
   },
   {
     accessorKey: 'name',
@@ -41,6 +44,19 @@ const columns: ColumnDef<Record<string, string>>[] = [
 
 const Spreadsheet = () => {
   const [data, setData] = useState(initialData);
+  const [columnData, setColumnData] = useState(columns);
+  // Define your functions
+  const handleOption1 = () => {
+    console.log('Option 1 selected');
+  };
+
+  const handleOption2 = () => {
+    console.log('Option 2 selected');
+  };
+
+  const handleOption3 = () => {
+    console.log('Option 3 selected');
+  };
 
   const table = useReactTable({
     data,
@@ -52,17 +68,37 @@ const Spreadsheet = () => {
   const newRow = () => {
     const newRowData: Record<string, string> = {};
 
-    // Add default values for each column in the new row
-    columns.forEach((col) => {
-        if ('accessorKey' in col) {
-            newRowData[col.accessorKey] = ''; 
-        }
-    });
 
     // Add the new row to the data state
-    setData((prevData) => [...prevData, newRowData]);
+    setData((prevData) => {
+      columns.forEach((col) => {
+      if ('accessorKey' in col) {
+
+        if (col.accessorKey == 'uid') {
+          newRowData[col.accessorKey] = String(uuidv4());
+          console.log(newRowData[col.accessorKey]);
+        } else {
+          newRowData[col.accessorKey] = ''; 
+        }
+      }
+      });
+
+      return [...prevData, newRowData]
+    });
+
+    console.log(data)
   };
 
+  const newCol = () => {
+    setColumnData((prevColumnData) => {
+      const newCol = {
+        accessorKey: 'new',
+        header: '',
+      }
+
+      return [...prevColumnData, newCol]
+    });
+  }
 
   
   const handleCellEdit = (rowIndex: number, columnId: string, value: string) => {
@@ -89,15 +125,26 @@ const Spreadsheet = () => {
       for (let j = 0; j < headerGroup.headers.length; j++) {
         const header = headerGroup.headers[j];
         if (!header) continue; // Skip if header is undefined
-
+        
         headerCells.push(
-          <th key={header.id} className="border border-gray-300 px-[1px] py-[1px] bg-blue-100 text-center">
+          <th key={header.id} className="border border-gray-300 bg-blue-100 font-normal text-center text-xs">
             {flexRender(header.column.columnDef.header, header.getContext())}
           </th>
         );
       }
-      headers.push(<tr key={headerGroup.id}>{headerCells}</tr>);
+
+      const lastCell = (
+          <th className="border border-gray-300 bg-blue-100 w-[70px] text-center text-xs font-normal">
+            <Dropdown options={[{label:'New Col', onClick: newCol}]} />
+            {/* <button onClick={() => {newRow();}} className='w-full h-full'><p>+</p></button> */}
+          </th>
+      );
+  
+      // headerCells.push(<tr key={headerGroups.length}>{lastCell}</tr>);
+      headers.push(<tr key={headerGroup.id}>{headerCells}{lastCell}</tr>);
     }
+
+
     return headers;
   };
 
@@ -105,6 +152,8 @@ const Spreadsheet = () => {
   const renderRows = () => {
     const rowModel = table.getRowModel();
     const rows = [];
+
+    console.log(rowModel);
 
     for (let i = 0; i < rowModel.rows.length; i++) {
       const row = rowModel.rows[i];
@@ -116,14 +165,15 @@ const Spreadsheet = () => {
         if (!cell) continue; // Skip if cell is undefined
         if (j == 0) {
             cells.push(
-                <td className="border border-gray-300 text-center">
-                    {i + 1}
+                <td className="border border-gray-300 text-center text-xs">
+                    <DropDownTwo options={options} rowId={String(row.original.uid)} text={String(i + 1)}/>
                 </td>
             );
         } else {
             cells.push(
                 <td key={cell.id} className="border border-gray-300 text-center">
                     <input
+                    className='w-[150px] h-[22px] text-xs text-center'
                     type="text"
                     value={cell.getValue() as string}
                     onChange={(e) =>
@@ -138,16 +188,6 @@ const Spreadsheet = () => {
       rows.push(<tr key={row.id}>{cells}</tr>);
     }
 
-    // const lastCell = []
-    // const headerGroups = table.getHeaderGroups();
-    // for (let i=0; i< headerGroups.length;i++) {
-    //     lastCell.push(
-    //             <td className="border border-gray-300 text-center">
-    //                 <button onClick={() => {newRow();}}>+</button>
-    //             </td>
-    //         );
-    // }
-
     const lastCell = (
         <td className="border border-gray-300 text-center">
             <button onClick={() => {newRow();}}>+</button>
@@ -159,6 +199,25 @@ const Spreadsheet = () => {
 
     return rows;
   };
+
+
+  const delRow = (rowId: String) => {
+
+    // Add the new row to the data state
+    setData((prevData) => {
+      // let items = null;
+      // const newRowData = prevData.filter(item => () => {item.id != rowId, items = item.id;});
+      // console.log(items);
+      // console.log(prevData);
+      // console.log(newRowData);
+      console.log(prevData)
+      return prevData.filter(item => item.uid !== rowId);
+    });
+  };
+
+  const options = [
+    { label: 'Delete Row', onClick: (rowId: String) => {delRow(rowId)}},
+  ];
 
   return (
     <div>
