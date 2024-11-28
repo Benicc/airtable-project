@@ -19,44 +19,32 @@ const initialData: Record<string, string>[] = [
 ];
 
 //fix for commit
-const columns: ColumnDef<Record<string, string>>[] = [
+const columnData: ColumnDef<Record<string, string>>[] = [
   {
     accessorKey: 'uid',
     header: '',
   },
   {
-    accessorKey: 'name',
+    accessorKey: String(uuidv4()),
     header: 'Name',
   },
   {
-    accessorKey: 'notes',
+    accessorKey: String(uuidv4()),
     header: 'Notes',
   },
   {
-    accessorKey: 'assignee',
+    accessorKey: String(uuidv4()),
     header: 'Assignee',
   },
   {
-    accessorKey: 'status',
+    accessorKey: String(uuidv4()),
     header: 'Status',
   },
 ];
 
 const Spreadsheet = () => {
   const [data, setData] = useState(initialData);
-  const [columnData, setColumnData] = useState(columns);
-  // Define your functions
-  const handleOption1 = () => {
-    console.log('Option 1 selected');
-  };
-
-  const handleOption2 = () => {
-    console.log('Option 2 selected');
-  };
-
-  const handleOption3 = () => {
-    console.log('Option 3 selected');
-  };
+  const [columns, setColumnData] = useState(columnData);
 
   const table = useReactTable({
     data,
@@ -73,10 +61,8 @@ const Spreadsheet = () => {
     setData((prevData) => {
       columns.forEach((col) => {
       if ('accessorKey' in col) {
-
         if (col.accessorKey == 'uid') {
           newRowData[col.accessorKey] = String(uuidv4());
-          console.log(newRowData[col.accessorKey]);
         } else {
           newRowData[col.accessorKey] = ''; 
         }
@@ -86,10 +72,38 @@ const Spreadsheet = () => {
       return [...prevData, newRowData]
     });
 
-    console.log(data)
+    // console.log(data)
   };
 
-  const newCol = () => {
+  // Create new column
+
+  // todo
+  // Take in column name as part of setColumnData to vary the accessorKey
+  // Set as header as well
+  // const newCol = () => {
+  //   setColumnData((prevColumnData) => {
+  //     const newCol = {
+  //       accessorKey: 'new',
+  //       header: '',
+  //     }
+
+  //     return [...prevColumnData, newCol]
+  //   });
+  // }
+
+  const newCol = (name: string) => {
+    setColumnData((prevColumnData) => {
+      const newCol = {
+        accessorKey: String(uuidv4()),
+        header: name,
+      }
+
+      return [...prevColumnData, newCol]
+    });
+  }
+
+  //todo
+  const delCol = () => {
     setColumnData((prevColumnData) => {
       const newCol = {
         accessorKey: 'new',
@@ -99,6 +113,7 @@ const Spreadsheet = () => {
       return [...prevColumnData, newCol]
     });
   }
+
 
   
   const handleCellEdit = (rowIndex: number, columnId: string, value: string) => {
@@ -116,6 +131,8 @@ const Spreadsheet = () => {
   const renderHeaders = () => {
     const headerGroups = table.getHeaderGroups();
     const headers = [];
+
+    // console.log(columns);
 
     for (let i = 0; i < headerGroups.length; i++) {
       const headerGroup = headerGroups[i];
@@ -135,6 +152,7 @@ const Spreadsheet = () => {
 
       const lastCell = (
           <th className="border border-gray-300 bg-blue-100 w-[70px] text-center text-xs font-normal">
+            {/* <Dropdown options={[{label:'New Col', onClick: newCol}]} /> */}
             <Dropdown options={[{label:'New Col', onClick: newCol}]} />
             {/* <button onClick={() => {newRow();}} className='w-full h-full'><p>+</p></button> */}
           </th>
@@ -153,7 +171,7 @@ const Spreadsheet = () => {
     const rowModel = table.getRowModel();
     const rows = [];
 
-    console.log(rowModel);
+    // console.log(rowModel);
 
     for (let i = 0; i < rowModel.rows.length; i++) {
       const row = rowModel.rows[i];
@@ -210,7 +228,7 @@ const Spreadsheet = () => {
       // console.log(items);
       // console.log(prevData);
       // console.log(newRowData);
-      console.log(prevData)
+      // console.log(prevData)
       return prevData.filter(item => item.uid !== rowId);
     });
   };
