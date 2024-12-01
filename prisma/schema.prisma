@@ -64,7 +64,6 @@ model User {
     sessions      Session[]
     posts         Post[]
 
-    Base Base[]
 }
 
 model VerificationToken {
@@ -80,9 +79,5 @@ model Base {
     id String @id @default(uuid())
     baseId String
     baseName String
-    userId String
     data Json 
-
-    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-    @@index([userId])
 }

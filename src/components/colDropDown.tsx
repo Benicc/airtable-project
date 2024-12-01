@@ -3,10 +3,10 @@ import React, { useState, useRef, useEffect } from 'react';
 type DropdownProps = {
   options: { label: string; onClick: (rowId: string) => void }[]; // Each option has a label and a function
   text: string;
-  rowId: string;
+  colId: string;
 };
 
-const colDropDown: React.FC<DropdownProps> = ({ options, text, rowId}) => {
+const DropDowncol: React.FC<DropdownProps> = ({ options, text, colId}) => {
   // State to manage dropdown visibility
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
@@ -37,25 +37,28 @@ const colDropDown: React.FC<DropdownProps> = ({ options, text, rowId}) => {
   }, []); // Empty dependency array ensures this effect runs only once when the component mounts
 
   return (
-    <div className="relative inline-block text-left" ref={dropdownRef}>
+    <div className="flex justify-center" ref={dropdownRef}>
       <button
         onClick={toggleDropdown}
-        className="w-[20px] text-center text-xs font-normal"
+        className="text-xs font-normal px-8 py-[4px]"
       >
-        {text}
+        <div>{text}</div>
+        
       </button>
 
       {isOpen && (
-        <div className="absolute mt-2 w-48 bg-white border rounded-md shadow-lg z-10">
-          <ul className='text-red-500'>
+        <div className="absolute mt-8 w-48 bg-white border rounded-md shadow-lg z-10">
+          <ul>
             {options.map((option, index) => (
               <li
                 key={index}
                 onClick={() => {
-                  option.onClick(rowId); // Call the onClick function passed with the option
+                  option.onClick(colId); // Call the onClick function passed with the option
                   setIsOpen(false); // Close the dropdown after selection
                 }}
-                className="px-4 py-2 hover:bg-gray-200 cursor-pointer"
+                className={`px-4 py-2 hover:bg-gray-200 cursor-pointer ${
+                  index === options.length - 1 ? 'text-red-500' : '' // Apply red background and white text to the last option
+                }`}
               >
                 {option.label} {/* Render the label of the option */}
               </li>
@@ -67,4 +70,4 @@ const colDropDown: React.FC<DropdownProps> = ({ options, text, rowId}) => {
   );
 };
 
-export default colDropDown;
+export default DropDowncol;

@@ -9,6 +9,7 @@ import {
 import Dropdown from './dropdown';
 import DropDownTwo from './dropdownTwo';
 import { v4 as uuidv4 } from 'uuid';
+import DropDowncol from './colDropDown';
 
 const initialData: Record<string, string>[] = [
   { uid: String(uuidv4()) },
@@ -75,21 +76,19 @@ const Spreadsheet = () => {
     // console.log(data)
   };
 
-  // Create new column
+  const delRow = (rowId: string) => {
 
-  // todo
-  // Take in column name as part of setColumnData to vary the accessorKey
-  // Set as header as well
-  // const newCol = () => {
-  //   setColumnData((prevColumnData) => {
-  //     const newCol = {
-  //       accessorKey: 'new',
-  //       header: '',
-  //     }
-
-  //     return [...prevColumnData, newCol]
-  //   });
-  // }
+    // Add the new row to the data state
+    setData((prevData) => {
+      // let items = null;
+      // const newRowData = prevData.filter(item => () => {item.id != rowId, items = item.id;});
+      // console.log(items);
+      // console.log(prevData);
+      // console.log(newRowData);
+      // console.log(prevData)
+      return prevData.filter(item => item.uid !== rowId);
+    });
+  };
 
   const newCol = (name: string) => {
     setColumnData((prevColumnData) => {
@@ -103,17 +102,25 @@ const Spreadsheet = () => {
   }
 
   //todo
-  const delCol = () => {
+  const delCol = (colId: string) => {
+    // Add the new row to the data state
+    console.log(colId);
     setColumnData((prevColumnData) => {
-      const newCol = {
-        accessorKey: 'new',
-        header: '',
-      }
-
-      return [...prevColumnData, newCol]
+      return prevColumnData.filter(item => (item as any).accessorKey !== colId);
     });
-  }
 
+    console.log(columns)
+  };
+
+// Sort the data by the 'uid' field in descending order
+  // const sortHightoLow = (colId: string) => {
+  //   setData((prevData) => {
+  //     const sortedColumnData = [...columnData].sort((a,b) => {
+  //     if (addEventListener.accessorKey && buildHeaderGroups[colId]) {
+  //       return a.accessorKey.localeCompare(b.accessorKey);
+  //     }});
+  //   }); 
+  // }
 
   
   const handleCellEdit = (rowIndex: number, columnId: string, value: string) => {
@@ -132,28 +139,44 @@ const Spreadsheet = () => {
     const headerGroups = table.getHeaderGroups();
     const headers = [];
 
-    // console.log(columns);
 
     for (let i = 0; i < headerGroups.length; i++) {
       const headerGroup = headerGroups[i];
       if (!headerGroup || !headerGroup.headers) continue; // Skip if headerGroup or headers is undefined
 
+
       const headerCells = [];
       for (let j = 0; j < headerGroup.headers.length; j++) {
         const header = headerGroup.headers[j];
         if (!header) continue; // Skip if header is undefined
+
+        // console.log(header.column);
+        if (j == 0) {
+          headerCells.push(<th className="border border-gray-300 bg-blue-100 font-normal text-xs">{" "}</th>)
+        } else if (flexRender(header.column.columnDef.header, header.getContext()) != null) {
+          headerCells.push(
+            <th key={header.id} className="border border-gray-300 bg-blue-100 font-normal text-xs">
+              <DropDowncol options={[{label:"Sort First -> Last", onClick: newCol}, {label:"Sort Last -> First", onClick: newCol}, {label:"Delete Column", onClick:delCol}]} 
+                text={String(flexRender(header.column.columnDef.header, header.getContext()))} 
+                colId={header.column.id}/>
+              {/* {flexRender(header.column.columnDef.header, header.getContext())} */}
+            </th>);
+        } else {
+          headerCells.push(
+            <th key={header.id} className="border border-gray-300 bg-blue-100 font-normal text-center text-xs">
+              <DropDowncol options={[{label:"Sort First -> Last", onClick: newCol}, {label:"Sort Last -> First", onClick: newCol}, {label:"Delete Column", onClick:delCol}]} 
+                text={""} colId={header.column.id}/>
+              {/* {flexRender(header.column.columnDef.header, header.getContext())} */}
+            </th>);
+        }
+       
         
-        headerCells.push(
-          <th key={header.id} className="border border-gray-300 bg-blue-100 font-normal text-center text-xs">
-            {flexRender(header.column.columnDef.header, header.getContext())}
-          </th>
-        );
       }
 
       const lastCell = (
           <th className="border border-gray-300 bg-blue-100 w-[70px] text-center text-xs font-normal">
             {/* <Dropdown options={[{label:'New Col', onClick: newCol}]} /> */}
-            <Dropdown options={[{label:'New Col', onClick: newCol}]} />
+            <Dropdown options={[{label:'Create New Column', onClick: newCol}]} />
             {/* <button onClick={() => {newRow();}} className='w-full h-full'><p>+</p></button> */}
           </th>
       );
@@ -216,21 +239,6 @@ const Spreadsheet = () => {
 
 
     return rows;
-  };
-
-
-  const delRow = (rowId: string) => {
-
-    // Add the new row to the data state
-    setData((prevData) => {
-      // let items = null;
-      // const newRowData = prevData.filter(item => () => {item.id != rowId, items = item.id;});
-      // console.log(items);
-      // console.log(prevData);
-      // console.log(newRowData);
-      // console.log(prevData)
-      return prevData.filter(item => item.uid !== rowId);
-    });
   };
 
   const options = [

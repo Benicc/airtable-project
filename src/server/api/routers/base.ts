@@ -1,10 +1,10 @@
 import { z } from "zod";
-import { createTRPCRouter, protectedProcedure } from "../trpc";
+import { createTRPCRouter, publicProcedure } from "../trpc";
 //import { v4 as uuidv4 } from 'uuid';
 
 
 export const baseRouter = createTRPCRouter({
-    createBase: protectedProcedure
+    createBase: publicProcedure
       .input(
         z.object({
           baseName: z.string(),
@@ -13,13 +13,11 @@ export const baseRouter = createTRPCRouter({
       )
       .mutation(async ({ input, ctx }) => {
         const { baseName, data} = input;
-        const userId = ctx.session.user.id;
         const baseId = "test";
   
         // Create a new Base in the database
         const newBase = await ctx.db.base.create({
           data: {
-            userId,
             baseId,
             baseName,
             data,
