@@ -19,6 +19,20 @@ const initialData: Record<string, string>[] = [
   { uid: String(uuidv4()) },
 ];
 
+
+//column initial accessor keys
+const NameKey = String(uuidv4())
+const NotesKey = String(uuidv4())
+const AssigneeKey = String(uuidv4())
+const StatusKey = String(uuidv4())
+
+let columnType: Record<string, string> = {
+  [NameKey]:"string", 
+  [NotesKey]:"string",
+  [AssigneeKey]:"string",
+  [StatusKey]:"string"
+}
+
 //fix for commit
 const columnData: ColumnDef<Record<string, string>>[] = [
   {
@@ -26,19 +40,19 @@ const columnData: ColumnDef<Record<string, string>>[] = [
     header: '',
   },
   {
-    accessorKey: String(uuidv4()),
+    accessorKey: NameKey,
     header: 'Name',
   },
   {
-    accessorKey: String(uuidv4()),
+    accessorKey: NotesKey,
     header: 'Notes',
   },
   {
-    accessorKey: String(uuidv4()),
+    accessorKey: AssigneeKey,
     header: 'Assignee',
   },
   {
-    accessorKey: String(uuidv4()),
+    accessorKey: StatusKey,
     header: 'Status',
   },
 ];
@@ -90,12 +104,31 @@ const Spreadsheet = () => {
     });
   };
 
-  const newCol = (name: string) => {
+  const newStringCol = (name: string) => {
     setColumnData((prevColumnData) => {
+      const newColId = String(uuidv4());
       const newCol = {
-        accessorKey: String(uuidv4()),
+        accessorKey: newColId,
         header: name,
       }
+
+      columnType[newColId] = "string";
+      console.log(columnType)
+
+      return [...prevColumnData, newCol]
+    });
+  }
+
+  const newIntegerCol = (name: string) => {
+    setColumnData((prevColumnData) => {
+      const newColId = String(uuidv4());
+      const newCol = {
+        accessorKey: newColId,
+        header: name,
+      }
+
+      columnType[newColId] = "integer";
+      console.log(columnType)
 
       return [...prevColumnData, newCol]
     });
@@ -113,14 +146,78 @@ const Spreadsheet = () => {
   };
 
 // Sort the data by the 'uid' field in descending order
-  // const sortHightoLow = (colId: string) => {
-  //   setData((prevData) => {
-  //     const sortedColumnData = [...columnData].sort((a,b) => {
-  //     if (addEventListener.accessorKey && buildHeaderGroups[colId]) {
-  //       return a.accessorKey.localeCompare(b.accessorKey);
-  //     }});
-  //   }); 
-  // }
+  const sortAtoZ = (colId: string) => {
+    setData((prevData) => {
+      console.log(prevData)
+        const sortedData = [...prevData].sort(
+          (a, b) => {
+            if (a[colId] !== undefined && b[colId] !== undefined) {
+              if (a[colId] < b[colId]) return -1;  // a comes before b
+              if (a[colId] > b[colId]) return 1;   // a comes after b
+              return 0;                       // a and b are equal
+            }
+            return 0;
+          }
+        );
+      console.log(sortedData)
+      return sortedData
+    }); 
+  }
+
+
+  const sortFirsttoLast = (colId: string) => {
+    setData((prevData) => {
+      console.log(prevData)
+        const sortedData = [...prevData].sort(
+          (a, b) => {
+            if (a[colId] !== undefined && b[colId] !== undefined) {
+              if (parseInt(a[colId], 10) < parseInt(b[colId], 10)) return -1;  // a comes before b
+              if (parseInt(a[colId], 10) > parseInt(b[colId], 10)) return 1;   // a comes after b
+              return 0;                       // a and b are equal
+            }
+            return 0;
+          }
+        );
+      console.log(sortedData)
+      return sortedData
+    }); 
+  }
+
+  const sortLasttoFirst = (colId: string) => {
+    setData((prevData) => {
+      console.log(prevData)
+        const sortedData = [...prevData].sort(
+          (a, b) => {
+            if (a[colId] !== undefined && b[colId] !== undefined) {
+              if (parseInt(a[colId], 10) > parseInt(b[colId], 10)) return -1;  // a comes before b
+              if (parseInt(a[colId], 10) < parseInt(b[colId], 10)) return 1;   // a comes after b
+              return 0;                       // a and b are equal
+            }
+            return 0;
+          }
+        );
+      console.log(sortedData)
+      return sortedData
+    }); 
+  }
+
+  const sortZtoA = (colId: string) => {
+    setData((prevData) => {
+      console.log(prevData)
+        const sortedData = [...prevData].sort(
+          (a, b) => {
+            if (a[colId] !== undefined && b[colId] !== undefined) {
+              if (a[colId] > b[colId]) return -1;  // a comes before b
+              if (a[colId] < b[colId]) return 1;   // a comes after b
+              return 0;                       // a and b are equal
+            }
+            return 0;
+          }
+        );
+      console.log(sortedData)
+      return sortedData
+    }); 
+  }
 
   
   const handleCellEdit = (rowIndex: number, columnId: string, value: string) => {
@@ -154,20 +251,38 @@ const Spreadsheet = () => {
         if (j == 0) {
           headerCells.push(<th className="border border-gray-300 bg-blue-100 font-normal text-xs">{" "}</th>)
         } else if (flexRender(header.column.columnDef.header, header.getContext()) != null) {
-          headerCells.push(
-            <th key={header.id} className="border border-gray-300 bg-blue-100 font-normal text-xs">
-              <DropDowncol options={[{label:"Sort First -> Last", onClick: newCol}, {label:"Sort Last -> First", onClick: newCol}, {label:"Delete Column", onClick:delCol}]} 
-                text={String(flexRender(header.column.columnDef.header, header.getContext()))} 
-                colId={header.column.id}/>
-              {/* {flexRender(header.column.columnDef.header, header.getContext())} */}
-            </th>);
+          if (columnType[header.column.id] == "integer") {
+            headerCells.push(
+              <th key={header.id} className="border border-gray-300 bg-blue-100 font-normal text-xs">
+                <DropDowncol options={[{label:"Sort First -> Last", onClick:sortFirsttoLast}, {label:"Sort Last -> First", onClick: sortLasttoFirst}, {label:"Delete Column", onClick:delCol}]} 
+                  text={String(flexRender(header.column.columnDef.header, header.getContext()))} 
+                  colId={header.column.id}/>
+              </th>);
+          } else {
+            headerCells.push(
+              <th key={header.id} className="border border-gray-300 bg-blue-100 font-normal text-xs">
+                <DropDowncol options={[{label:"Sort A -> Z", onClick:sortAtoZ}, {label:"Sort Z -> A", onClick: sortZtoA}, {label:"Delete Column", onClick:delCol}]} 
+                  text={String(flexRender(header.column.columnDef.header, header.getContext()))} 
+                  colId={header.column.id}/>
+              </th>);
+          }
         } else {
-          headerCells.push(
+          if (columnType[header.column.id] == "integer") {
+            headerCells.push(
             <th key={header.id} className="border border-gray-300 bg-blue-100 font-normal text-center text-xs">
-              <DropDowncol options={[{label:"Sort First -> Last", onClick: newCol}, {label:"Sort Last -> First", onClick: newCol}, {label:"Delete Column", onClick:delCol}]} 
+              <DropDowncol options={[{label:"Sort First -> Last", onClick: sortFirsttoLast}, {label:"Sort Last -> First", onClick: sortLasttoFirst}, {label:"Delete Column", onClick:delCol}]} 
                 text={""} colId={header.column.id}/>
               {/* {flexRender(header.column.columnDef.header, header.getContext())} */}
             </th>);
+          } else {
+            headerCells.push(
+              <th key={header.id} className="border border-gray-300 bg-blue-100 font-normal text-center text-xs">
+                <DropDowncol options={[{label:"Sort A -> Z", onClick: sortAtoZ}, {label:"Sort Z -> A", onClick: sortZtoA}, {label:"Delete Column", onClick:delCol}]} 
+                  text={""} colId={header.column.id}/>
+                {/* {flexRender(header.column.columnDef.header, header.getContext())} */}
+              </th>);
+          }
+          
         }
        
         
@@ -176,7 +291,7 @@ const Spreadsheet = () => {
       const lastCell = (
           <th className="border border-gray-300 bg-blue-100 w-[70px] text-center text-xs font-normal">
             {/* <Dropdown options={[{label:'New Col', onClick: newCol}]} /> */}
-            <Dropdown options={[{label:'Create New Column', onClick: newCol}]} />
+            <Dropdown options={[{label:'New text column', onClick: newStringCol}, {label:'New number column', onClick: newIntegerCol}]} />
             {/* <button onClick={() => {newRow();}} className='w-full h-full'><p>+</p></button> */}
           </th>
       );
@@ -211,7 +326,21 @@ const Spreadsheet = () => {
                 </td>
             );
         } else {
-            cells.push(
+            if (columnType[cell.column.id] == "integer") {
+              cells.push(
+                <td key={cell.id} className="border border-gray-300 text-center">
+                    <input
+                    className='w-[150px] h-[22px] text-xs text-center'
+                    type="number"
+                    value={cell.getValue() as string}
+                    onChange={(e) =>
+                        handleCellEdit(row.index, cell.column.id, e.target.value)
+                    }
+                    />
+                </td>
+              );
+            } else {
+              cells.push(
                 <td key={cell.id} className="border border-gray-300 text-center">
                     <input
                     className='w-[150px] h-[22px] text-xs text-center'
@@ -222,7 +351,9 @@ const Spreadsheet = () => {
                     }
                     />
                 </td>
-            );
+              );
+            }
+            
         }
         
       }
