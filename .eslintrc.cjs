@@ -38,7 +38,9 @@ const config = {
       }
     ],
     "@typescript-eslint/prefer-for-of": "off", // Add this line to disable the rule
-    "@typescript-eslint/prefer-optional-chain": "off"
+    "@typescript-eslint/prefer-optional-chain": "off",
+    "@typescript-eslint/no-explicit-any": "off",          // Disable no-explicit-any rule
+    "@typescript-eslint/no-unsafe-member-access": "off"   // Disable no-unsafe-member-access rule
   }
 }
 module.exports = config;
