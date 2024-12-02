@@ -26,7 +26,7 @@ const NotesKey = String(uuidv4())
 const AssigneeKey = String(uuidv4())
 const StatusKey = String(uuidv4())
 
-let columnType: Record<string, string> = {
+const columnType: Record<string, string> = {
   [NameKey]:"string", 
   [NotesKey]:"string",
   [AssigneeKey]:"string",
