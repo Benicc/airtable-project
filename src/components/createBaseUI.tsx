@@ -1,28 +1,81 @@
+import { ColumnDef } from "@tanstack/react-table";
 import React, { useState } from "react";
 import { api } from '~/utils/api';
+import { v4 as uuidv4 } from 'uuid';
 
 interface PopupProps {
   onClose: () => void;
 }
 
+  const initialData: Record<string, string>[] = [
+    { uid: String(uuidv4()) },
+    { uid: String(uuidv4()) },
+    { uid: String(uuidv4()) },
+    { uid: String(uuidv4()) },
+    { uid: String(uuidv4()) },
+  ];
+  
+  
+  //column initial accessor keys
+  const NameKey = String(uuidv4())
+  const NotesKey = String(uuidv4())
+  const AssigneeKey = String(uuidv4())
+  const StatusKey = String(uuidv4())
+  
+  const columnType: Record<string, string> = {
+    [NameKey]:"string", 
+    [NotesKey]:"string",
+    [AssigneeKey]:"string",
+    [StatusKey]:"string"
+  }
+  
+  //fix for commit
+  const columnData: ColumnDef<Record<string, string>>[] = [
+    {
+      accessorKey: 'uid',
+      header: '',
+    },
+    {
+      accessorKey: NameKey,
+      header: 'Name',
+    },
+    {
+      accessorKey: NotesKey,
+      header: 'Notes',
+    },
+    {
+      accessorKey: AssigneeKey,
+      header: 'Assignee',
+    },
+    {
+      accessorKey: StatusKey,
+      header: 'Status',
+    },
+  ];
+
+
 const Popup: React.FC<PopupProps> = ({ onClose }) => {
   const [baseName, setBaseName] = useState('');
 
-  // Use the mutation to create a new base
+  // // Use the mutation to create a new base
   const createBaseMutation = api.base.createBase.useMutation({
     onSuccess: newBase => {
-      console.log(newBase);
+      console.log("success");
     },
   });
 
-
-
-  const handleCreateBase = () => {
+  const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+  const handleCreateBase = async () => {
 
     createBaseMutation.mutate({
-      data: [{}],
+      data: {rows: initialData, cols: columnData, types: columnType},
       baseName,
     });
+
+    onClose()
+    await delay(5000);
+
+    window.location.reload()
   }
 
 
@@ -51,3 +104,4 @@ const Popup: React.FC<PopupProps> = ({ onClose }) => {
 };
 
 export default Popup;
+

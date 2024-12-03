@@ -2,7 +2,7 @@
 
 const NavbarUtils = () => {
     return (
-    <div className="flex justify-between items-center h-8 shadow-md bg-white">
+    <div className="flex justify-between items-center h-12 shadow-md bg-white">
         <div className="flex items-center">
             <div className="ml-2 flex items-center">
                 <svg fill="#000000" viewBox="0 0 32 32" width="20" height="20" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M 4 7 L 4 9 L 28 9 L 28 7 Z M 4 15 L 4 17 L 28 17 L 28 15 Z M 4 23 L 4 25 L 28 25 L 28 23 Z"></path></g></svg>

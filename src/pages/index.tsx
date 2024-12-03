@@ -2,6 +2,7 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useState } from "react";
 import Popup from "~/components/createBaseUI";
+import { api } from "~/utils/api";
 
 
 export default function Home() {
@@ -9,6 +10,8 @@ export default function Home() {
   const user = session.data?.user
 
   const [showPopup, setShowPopup] = useState(false);
+
+  const { data: bases, isLoading, error } = api.base.getAllBaseIds.useQuery();
 
   const togglePopup = () => {
     setShowPopup(!showPopup);
@@ -35,6 +38,29 @@ export default function Home() {
 
         {showPopup && (
           <Popup onClose={togglePopup}/>
+        )}
+
+        {user != null && (
+          <div className="mt-6">
+            <h2 className="text-xl">Your Bases</h2>
+            {isLoading ? (
+              <p>Loading...</p>
+            ) : error ? (
+              <p>Error loading bases</p>
+            ) : (
+              <ul className="space-y-2">
+                {bases?.map((base) => (
+                  <li key={base.baseId} className="border p-2">
+                    <Link href={`/${user.id}/${base.baseId}`}>
+                      <button className="text-blue-500 hover:underline w-full h-full">
+                        {base.baseName}
+                      </button>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+        </div>
         )}
         
         {user == null ? (
