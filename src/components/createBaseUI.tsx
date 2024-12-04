@@ -37,19 +37,19 @@ interface PopupProps {
     },
     {
       accessorKey: NameKey,
-      header: 'Name',
+      header: 'test',
     },
     {
       accessorKey: NotesKey,
-      header: 'Notes',
+      header: 'test',
     },
     {
       accessorKey: AssigneeKey,
-      header: 'Assignee',
+      header: 'test',
     },
     {
       accessorKey: StatusKey,
-      header: 'Status',
+      header: 'test',
     },
   ];
 
@@ -67,15 +67,19 @@ const Popup: React.FC<PopupProps> = ({ onClose }) => {
   const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
   const handleCreateBase = async () => {
 
+    const defaultData = {rows: initialData, cols: columnData, types: columnType};
+
+    console.log(defaultData)
+
     createBaseMutation.mutate({
-      data: {rows: initialData, cols: columnData, types: columnType},
+      baseData: defaultData,
       baseName,
     });
 
     onClose()
     await delay(5000);
 
-    window.location.reload()
+    //window.location.reload()
   }
 
 

@@ -80,9 +80,9 @@ model VerificationToken {
 model Base {
     id String @id @default(uuid())
     userId String
-    baseId String
+    baseId String @unique
     baseName String
-    data Json 
+    baseData Json 
 
     user User @relation(fields: [userId], references: [id], onDelete: Cascade)
     @@unique([baseId, userId])

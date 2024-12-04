@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   useReactTable,
   ColumnDef,
@@ -10,8 +10,10 @@ import Dropdown from './dropdown';
 import DropDownTwo from './dropdownTwo';
 import { v4 as uuidv4 } from 'uuid';
 import DropDowncol from './colDropDown';
+import { api } from '~/utils/api';
+import { useRouter } from 'next/router';
 
-const initialData: Record<string, string>[] = [
+let defaultinitialData: Record<string, string>[] = [
   { uid: String(uuidv4()) },
   { uid: String(uuidv4()) },
   { uid: String(uuidv4()) },
@@ -26,7 +28,7 @@ const NotesKey = String(uuidv4())
 const AssigneeKey = String(uuidv4())
 const StatusKey = String(uuidv4())
 
-const columnType: Record<string, string> = {
+let defaultcolumnType: Record<string, string> = {
   [NameKey]:"string", 
   [NotesKey]:"string",
   [AssigneeKey]:"string",
@@ -34,7 +36,7 @@ const columnType: Record<string, string> = {
 }
 
 //fix for commit
-const columnData: ColumnDef<Record<string, string>>[] = [
+let defaultcolumnData: ColumnDef<Record<string, string>>[] = [
   {
     accessorKey: 'uid',
     header: '',
@@ -57,8 +59,56 @@ const columnData: ColumnDef<Record<string, string>>[] = [
   },
 ];
 
+interface BaseData {
+  rows?: any[];
+  cols?: any[];
+  types?: Record<string, string>;
+}
+
 const Spreadsheet = () => {
-  const [data, setData] = useState(initialData);
+
+  const router = useRouter();
+  const { baseId, userId} = router.query;
+  const baseIdString = String(baseId)
+  console.log(baseIdString)
+  //const userIdString = typeof userId === "string" ? userId : (Array.isArray(userId) ? userId[0] : undefined);
+
+  const [initialData, setInitialData] = useState(defaultinitialData);
+  const [columnData, setCols] = useState(defaultcolumnData);
+  const [columnType, setColumnType] = useState(defaultcolumnType);
+
+  //might be something wrong with baseIdString
+  const { data: base, isLoading, error } = api.base.getBaseById.useQuery({ baseId: baseIdString });
+  console.log(JSON.stringify(base))
+  
+  useEffect(() => {
+    // Only execute if baseIdString and base are valid
+    if (baseIdString && base != undefined && !isLoading) {
+      const dbdata = base.baseData as BaseData ?? {
+        rows: defaultinitialData,
+        cols: defaultcolumnData,
+        types: defaultcolumnType
+      };
+      
+      // Check if rows, cols, and types are defined and have valid values
+      const rows = dbdata.rows ?? null;
+      const cols = dbdata.cols ?? null;
+      const types = dbdata.types ?? null;
+
+      // Update state only if the data has changed
+      if (rows !== initialData || cols !== columnData || types !== columnType) {
+        if (rows != null && cols != null && types != null ) {
+          setInitialData(dbdata.rows ?? defaultinitialData);
+          setColumnData(dbdata.cols ?? defaultcolumnData);
+          setColumnType(dbdata.types ?? defaultcolumnType);
+          console.log("Updated data", JSON.stringify(rows, null, 2), cols, types);
+        }
+      }
+    }
+  }, [base, baseIdString]);
+  
+
+  const [data, setData] = useState<Record<string, string>[]>(initialData);
   const [columns, setColumnData] = useState(columnData);
 
   const table = useReactTable({

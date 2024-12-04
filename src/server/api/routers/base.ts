@@ -8,12 +8,13 @@ export const baseRouter = createTRPCRouter({
       .input(
         z.object({
           baseName: z.string(),
-          data: z.object({}), // Flexible JSON data
+          baseData: z.record(z.any()), // Flexible JSON data
         })
       )
       .mutation(async ({ input, ctx }) => {
-        const { baseName, data} = input;
+        const { baseName, baseData} = input;
         const baseId = String(uuidv4());
+        // console.log("++++++++++++" + JSON.stringify(baseData))
   
         // Create a new Base in the database
         const newBase = await ctx.db.base.create({
@@ -21,7 +22,7 @@ export const baseRouter = createTRPCRouter({
             baseId,
             userId: ctx.session.user.id,
             baseName,
-            data,
+            baseData,
           },
         });
   
@@ -37,6 +38,7 @@ export const baseRouter = createTRPCRouter({
         select: {
           baseId: true,
           baseName: true,
+          baseData:true,
         },
       });
     
@@ -56,10 +58,7 @@ export const baseRouter = createTRPCRouter({
 
       const base = await ctx.db.base.findUnique({
         where: {
-          baseId_userId: {
-            baseId,
-            userId: ctx.session.user.id,
-          },
+          baseId,
         },
       });
 
@@ -67,7 +66,45 @@ export const baseRouter = createTRPCRouter({
         throw new Error("Base not found or you do not have permission to access it");
       }
 
+      // console.log("TESTTTTTTTT" + JSON.stringify(base, null, 2));
+
+      const jsonData = base.baseData as Record<string, any>;
+
       return base;
+    }),
+    updateBase: protectedProcedure
+    .input(
+      z.object({
+        baseId: z.string(), // ID of the base to update
+        baseData: z.record(z.any()), // Updated JSON data
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { baseId, baseData } = input;
+
+      // Check if the base exists and belongs to the current user
+      const existingBase = await ctx.db.base.findFirst({
+        where: {
+          baseId,
+          userId: ctx.session.user.id, // Ensure the base belongs to the current user
+        },
+      });
+
+      if (!existingBase) {
+        throw new Error("Base not found or you do not have access.");
+      }
+
+      // Update the baseData in the database
+      const updatedBase = await ctx.db.base.update({
+        where: {
+          baseId,
+        },
+        data: {
+          baseData,
+        },
+      });
+
+      return updatedBase;
     }),
   
 });
