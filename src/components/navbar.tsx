@@ -3,11 +3,60 @@ import Link from "next/link";
 import { ProfileImage } from "./ProfileImage";
 import NavbarUtils from "./navbarutils";
 import Tabs from "./tab";
+import RenameDropdown from "./rename";
+import { api } from "~/utils/api";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 
 const Navbar = () => {
-    const session = useSession()
+    const router = useRouter();
+    const {baseId} = router.query;
+    const baseIdString = String(baseId)
+    
+    const session = useSession();
 
-    if (session.status !== "authenticated") return
+
+    const [baseName, setBaseName] = useState("untitled"); 
+
+    const { data: base, isLoading, error } = api.base.getBaseById.useQuery(
+        { baseId: String(baseId) },
+        {
+            enabled: !!baseId,
+        }
+    );
+
+    
+    useEffect(() => {
+        if (baseIdString!= "undefined" && base != undefined && !isLoading) {
+            if (!isLoading && baseId != undefined &&base != undefined && base?.baseName && baseName !== base.baseName) {
+                setBaseName(base?.baseName ?? "untitled");
+            }
+        }
+    }, [base, isLoading, baseName]);
+    
+
+    const updateBaseMutation = api.base.updateBase.useMutation();
+
+    const rename = (baseName: string) => {
+        updateBaseMutation.mutate(
+            { baseId: baseIdString, baseName },
+            {
+            onSuccess: () => {
+                console.log("Base data updated successfully.");
+            },
+            onError: (error) => {
+                console.error("Error updating base data:", error.message);
+            },
+            });
+    }
+
+    const close = () => {
+
+    }
+
+    if (session.status !== "authenticated") {
+        return null;
+    };
 
     return (
         <div>
@@ -16,10 +65,14 @@ const Navbar = () => {
                     <nav className="bg-[rgb(59,102,163)] text-white py-4">
                         <div className="flex justify-between items-center">
                             <div className="text-lg ml-4 font-light flex space-x-4 items-center">
+                                <Link href="/" className="mt-1">
+                                    <button>
+                                        <svg viewBox="0 0 16 16" fill="none" width="20" height="20" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M1 6V15H6V11C6 9.89543 6.89543 9 8 9C9.10457 9 10 9.89543 10 11V15H15V6L8 0L1 6Z" fill="#FFFFFF"></path> </g></svg>
+                                    </button>
+                                </Link>
+                                
                                 <div className="flex justify-center item-center">
-                                <Link href="/" className="font-bold">Base</Link>
-                                <svg viewBox="0 0 24 26" xmlns="http://www.w3.org/2000/svg" fill="#FFFFFF" width="30" height = "30"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g> <path fill="none" d="M0 0h24v24H0z"></path> 
-                                    <path d="M12 15l-4.243-4.243 1.415-1.414L12 12.172l2.828-2.829 1.415 1.414z"></path> </g> </g></svg>
+                                    <RenameDropdown options={[{label:"Rename", onClick:rename}, {label:"Cancel", onClick:close}]} baseName={baseName}/>
                                 </div>
                                 <Link href="/base" className="hover:underline text-sm">
                                 Data
