@@ -51,7 +51,7 @@ const Navbar = () => {
     }
 
     const close = () => {
-
+        return null;
     }
 
     if (session.status !== "authenticated") {
