@@ -30,12 +30,12 @@ const config = {
     ],
     "@typescript-eslint/require-await": "off",
     "@typescript-eslint/no-misused-promises": [
-      "error",
-      {
-        "checksVoidReturn": {
-          "attributes": false
-        }
-      }
+      "off",
+      // {
+      //   "checksVoidReturn": {
+      //     "attributes": false
+      //   }
+      // }
     ],
     "@typescript-eslint/prefer-for-of": "off", // Add this line to disable the rule
     "@typescript-eslint/prefer-optional-chain": "off",
