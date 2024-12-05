@@ -37,7 +37,8 @@ const Navbar = () => {
 
     const updateBaseMutation = api.base.updateBase.useMutation();
 
-    const rename = (baseName: string) => {
+    const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+    const rename = async (baseName: string) => {
         updateBaseMutation.mutate(
             { baseId: baseIdString, baseName },
             {
@@ -48,6 +49,9 @@ const Navbar = () => {
                 console.error("Error updating base data:", error.message);
             },
             });
+        await delay(2000);
+
+        window.location.reload()
     }
 
     const close = () => {
