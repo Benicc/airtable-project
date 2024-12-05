@@ -78,20 +78,20 @@ const Navbar = () => {
                                 <div className="flex justify-center item-center">
                                     <RenameDropdown options={[{label:"Rename", onClick:rename}, {label:"Cancel", onClick:close}]} baseName={baseName}/>
                                 </div>
-                                <Link href="/base" className="hover:underline text-sm">
+                                <div className="hover:underline text-sm">
                                 Data
-                                </Link>
-                                <Link href="/about" className="hover:underline text-sm">
+                                </div>
+                                <div className="hover:underline text-sm">
                                 Automations
-                                </Link>
-                                <Link href="/contact" className="hover:underline text-sm">
+                                </div>
+                                <div className="hover:underline text-sm">
                                 Interfaces
-                                </Link>
+                                </div>
                                 <div className="flex justify-center items-center">
                                 <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20 " width="20" height="20" fill="#A0A0A0"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g> <rect x="6.275" y="0" width="0.2" height="19"></rect> </g> </g></svg>
-                                <Link href="/contact" className="hover:underline text-sm ml-2">
+                                <div className="hover:underline text-sm ml-2">
                                     Forms
-                                </Link>
+                                </div>
                             </div>
                             </div>
                             <div className="flex space-x-4 items-center font-light mr-4">
@@ -132,13 +132,13 @@ const Navbar = () => {
                             <div className="ml-4 text-xs text-white w-24">Add or import</div>
                         </div>
                         <div className="bg-[rgb(53,90,145)] h-8 ml-4 pl-5 pr-5 rounded-tl-lg rounded-tr-lg text-white space-x-4 flex justify-center items-center">
-                            <Link href="/about" className="text-sm">
+                            <div className="text-sm">
                                 Extensions
-                            </Link>
+                            </div>
                             <div className="flex justify-center items-center text-sm">
-                                <Link href="/about">
+                                <div>
                                     Tools
-                                </Link>
+                                </div>
                                 <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#FFFFFF" width="20" height = "24"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g> <path fill="none" d="M0 0h24v24H0z"></path> 
                                 <path d="M12 15l-4.243-4.243 1.415-1.414L12 12.172l2.828-2.829 1.415 1.414z"></path> </g> </g></svg>
                             </div>
