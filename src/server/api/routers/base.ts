@@ -109,6 +109,34 @@ export const baseRouter = createTRPCRouter({
   
       return updatedBase;
     }),
+    deleteBase: protectedProcedure
+    .input(
+      z.object({
+        baseId: z.string(), // baseId is required for deletion
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { baseId } = input;
+
+      // Check if the base exists and belongs to the current user
+      const existingBase = await ctx.db.base.findFirst({
+        where: {
+          baseId,
+          userId: ctx.session.user.id,
+        },
+      });
+
+      if (!existingBase) {
+        throw new Error("Base not found or you do not have access.");
+      }
+
+      // Delete the base from the database
+      await ctx.db.base.delete({
+        where: { baseId },
+      });
+
+      return { message: "Base deleted successfully" };
+    }),
   
   
 });

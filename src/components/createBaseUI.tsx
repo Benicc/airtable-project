@@ -16,11 +16,11 @@ interface PopupProps {
   const StatusKey = String(uuidv4())
 
   const initialData: Record<string, string>[] = [
-    { uid: String(uuidv4()), [NameKey]: "test", [NotesKey]:"test", [AssigneeKey]:"test", [StatusKey]:"test"},
-    { uid: String(uuidv4()), [NameKey]: "test", [NotesKey]:"test", [AssigneeKey]:"test", [StatusKey]:"test" },
-    { uid: String(uuidv4()), [NameKey]: "test", [NotesKey]:"test", [AssigneeKey]:"test", [StatusKey]:"test" },
-    { uid: String(uuidv4()), [NameKey]: "test", [NotesKey]:"test", [AssigneeKey]:"test", [StatusKey]:"test" },
-    { uid: String(uuidv4()), [NameKey]: "test", [NotesKey]:"test", [AssigneeKey]:"test", [StatusKey]:"test" },
+    { uid: String(uuidv4())},
+    { uid: String(uuidv4())},
+    { uid: String(uuidv4())},
+    { uid: String(uuidv4())},
+    { uid: String(uuidv4())},
   ];
   
   
@@ -39,19 +39,19 @@ interface PopupProps {
     },
     {
       accessorKey: NameKey,
-      header: 'test',
+      header: 'Name',
     },
     {
       accessorKey: NotesKey,
-      header: 'test',
+      header: 'Notes',
     },
     {
       accessorKey: AssigneeKey,
-      header: 'test',
+      header: 'Assignee',
     },
     {
       accessorKey: StatusKey,
-      header: 'test',
+      header: 'Status',
     },
   ];
 
@@ -79,9 +79,9 @@ const Popup: React.FC<PopupProps> = ({ onClose }) => {
     });
 
     onClose()
-    await delay(5000);
+    await delay(2000);
 
-    //window.location.reload()
+    window.location.reload()
   }
 
 

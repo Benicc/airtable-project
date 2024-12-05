@@ -22,7 +22,7 @@ const AssigneeKey = String(uuidv4())
 const StatusKey = String(uuidv4())
 
 const defaultinitialData: Record<string, string>[] = [
-  { uid: String(uuidv4()), [NameKey]:"Tset" },
+  { uid: String(uuidv4()) },
   { uid: String(uuidv4()) },
   { uid: String(uuidv4()) },
   { uid: String(uuidv4()) },
@@ -70,7 +70,7 @@ interface BaseData {
 const Spreadsheet = () => {
 
   const router = useRouter();
-  const { baseId, userId} = router.query;
+  const {baseId} = router.query;
   const baseIdString = String(baseId)
 
   const [columnType, setColumnType] = useState(defaultcolumnType);  
@@ -78,7 +78,22 @@ const Spreadsheet = () => {
   const [columns, setColumnData] = useState(defaultcolumnData);
 
   //might be something wrong with baseIdString
-  const { data: base, isLoading, error } = api.base.getBaseById.useQuery({ baseId: baseIdString });
+  const { data: base, isLoading, error } = api.base.getBaseById.useQuery(
+    { baseId: baseIdString },
+
+  );
+
+  useEffect(() => {
+    if (error) {
+      if (error?.message === "Base not found or you do not have permission to access it") {
+        // Redirect to a different page if user is not authorized
+        router.push('/unauthorized');
+      } else {
+        // Handle other errors
+        router.push('/unauthorized');
+      }
+    }
+  }, [error, router]);
   
   useEffect(() => {
     // Only execute if baseIdString and base are valid
@@ -440,80 +455,6 @@ const Spreadsheet = () => {
     return rows;
   };
 
-  // const renderRows = () => {
-  //   const rows = [];
-  
-  //   // Iterate over each row in `initialData`
-  //   initialData.forEach((row, rowIndex) => {
-  //     const cells: JSX.Element[] = [];
-  
-  //     // Iterate over each column in `columnData`
-  //     columnData.forEach((column, cellIndex) => {
-  //       const columnId = column.id; // Assuming columns have an `id` field
-  
-  //       if (cellIndex === 0) {
-  //         // First column with DropDownTwo
-  //         cells.push(
-  //           <td className="border border-gray-300 text-center text-xs" key={columnId}>
-  //             <DropDownTwo
-  //               options={options}
-  //               rowId={String(row.uid)} // Assuming `uid` exists in rows
-  //               text={String(rowIndex + 1)}
-  //             />
-  //           </td>
-  //         );
-  //       } else {
-  //         // Handle other columns based on their type
-  //         if (column.type === "integer") {
-  //           cells.push(
-  //             <td key={columnId} className="border border-gray-300 text-center">
-  //               <input
-  //                 className="w-[150px] h-[22px] text-xs text-center"
-  //                 type="number"
-  //                 value={row[columnId]} // Access row data by column ID
-  //                 onChange={(e) =>
-  //                   handleCellEdit(rowIndex, columnId, e.target.value)
-  //                 }
-  //               />
-  //             </td>
-  //           );
-  //         } else {
-  //           cells.push(
-  //             <td key={columnId} className="border border-gray-300 text-center">
-  //               <input
-  //                 className="w-[150px] h-[22px] text-xs text-center"
-  //                 type="text"
-  //                 value={row[columnId]} // Access row data by column ID
-  //                 onChange={(e) =>
-  //                   handleCellEdit(rowIndex, columnId, e.target.value)
-  //                 }
-  //               />
-  //             </td>
-  //           );
-  //         }
-  //       }
-  //     });
-  
-  //     rows.push(<tr key={rowIndex}>{cells}</tr>);
-  //   });
-  
-  //   // Add the last row for the "Add New Row" button
-  //   rows.push(
-  //     <tr key={initialData.length}>
-  //       <td
-  //         className="border border-gray-300 text-center"
-  //         colSpan={columnData.length}
-  //       >
-  //         <button onClick={newRow} className="text-blue-500">
-  //           +
-  //         </button>
-  //       </td>
-  //     </tr>
-  //   );
-  
-  //   return rows;
-  // };
-  
 
   const options = [
     { label: 'Delete Row', onClick: (rowId: string) => {delRow(rowId)}},
