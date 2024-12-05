@@ -42,6 +42,7 @@ const config = {
     "@typescript-eslint/no-explicit-any": "off",          // Disable no-explicit-any rule
     "@typescript-eslint/no-unsafe-member-access": "off",   // Disable no-unsafe-member-access rule
     "@typescript-eslint/no-floating-promises": "off",
+    "@typescript-eslint/no-unused-expressions": "off",
   }
 }
 module.exports = config;
