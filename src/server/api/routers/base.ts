@@ -58,8 +58,11 @@ export const baseRouter = createTRPCRouter({
 
       const base = await ctx.db.base.findUnique({
         where: {
-          baseId,
-        },
+          baseId_userId: {
+            baseId,
+            userId: ctx.session.user.id,
+          },
+      },
       });
 
       if (!base) {
@@ -75,36 +78,37 @@ export const baseRouter = createTRPCRouter({
     updateBase: protectedProcedure
     .input(
       z.object({
-        baseId: z.string(), // ID of the base to update
-        baseData: z.record(z.any()), // Updated JSON data
+        baseId: z.string(), 
+        baseName: z.string().optional(), // Optional baseName update
+        baseData: z.record(z.any()).optional(), // Optional baseData update
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const { baseId, baseData } = input;
-
+      const { baseId, baseName, baseData } = input;
+  
       // Check if the base exists and belongs to the current user
       const existingBase = await ctx.db.base.findFirst({
         where: {
           baseId,
-          userId: ctx.session.user.id, // Ensure the base belongs to the current user
+          userId: ctx.session.user.id,
         },
       });
-
+  
       if (!existingBase) {
         throw new Error("Base not found or you do not have access.");
       }
-
-      // Update the baseData in the database
+  
+      // Update the base with any provided fields
       const updatedBase = await ctx.db.base.update({
-        where: {
-          baseId,
-        },
+        where: { baseId },
         data: {
-          baseData,
+          ...(baseName && { baseName }),
+          ...(baseData && { baseData }),
         },
       });
-
+  
       return updatedBase;
     }),
+  
   
 });

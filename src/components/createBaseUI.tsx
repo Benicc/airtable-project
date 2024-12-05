@@ -7,20 +7,22 @@ interface PopupProps {
   onClose: () => void;
 }
 
-  const initialData: Record<string, string>[] = [
-    { uid: String(uuidv4()) },
-    { uid: String(uuidv4()) },
-    { uid: String(uuidv4()) },
-    { uid: String(uuidv4()) },
-    { uid: String(uuidv4()) },
-  ];
-  
+
   
   //column initial accessor keys
   const NameKey = String(uuidv4())
   const NotesKey = String(uuidv4())
   const AssigneeKey = String(uuidv4())
   const StatusKey = String(uuidv4())
+
+  const initialData: Record<string, string>[] = [
+    { uid: String(uuidv4()), [NameKey]: "test", [NotesKey]:"test", [AssigneeKey]:"test", [StatusKey]:"test"},
+    { uid: String(uuidv4()), [NameKey]: "test", [NotesKey]:"test", [AssigneeKey]:"test", [StatusKey]:"test" },
+    { uid: String(uuidv4()), [NameKey]: "test", [NotesKey]:"test", [AssigneeKey]:"test", [StatusKey]:"test" },
+    { uid: String(uuidv4()), [NameKey]: "test", [NotesKey]:"test", [AssigneeKey]:"test", [StatusKey]:"test" },
+    { uid: String(uuidv4()), [NameKey]: "test", [NotesKey]:"test", [AssigneeKey]:"test", [StatusKey]:"test" },
+  ];
+  
   
   const columnType: Record<string, string> = {
     [NameKey]:"string", 

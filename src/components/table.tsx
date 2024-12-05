@@ -13,13 +13,6 @@ import DropDowncol from './colDropDown';
 import { api } from '~/utils/api';
 import { useRouter } from 'next/router';
 
-let defaultinitialData: Record<string, string>[] = [
-  { uid: String(uuidv4()) },
-  { uid: String(uuidv4()) },
-  { uid: String(uuidv4()) },
-  { uid: String(uuidv4()) },
-  { uid: String(uuidv4()) },
-];
 
 
 //column initial accessor keys
@@ -28,7 +21,16 @@ const NotesKey = String(uuidv4())
 const AssigneeKey = String(uuidv4())
 const StatusKey = String(uuidv4())
 
-let defaultcolumnType: Record<string, string> = {
+const defaultinitialData: Record<string, string>[] = [
+  { uid: String(uuidv4()), [NameKey]:"Tset" },
+  { uid: String(uuidv4()) },
+  { uid: String(uuidv4()) },
+  { uid: String(uuidv4()) },
+  { uid: String(uuidv4()) },
+];
+
+
+const defaultcolumnType: Record<string, string> = {
   [NameKey]:"string", 
   [NotesKey]:"string",
   [AssigneeKey]:"string",
@@ -36,7 +38,7 @@ let defaultcolumnType: Record<string, string> = {
 }
 
 //fix for commit
-let defaultcolumnData: ColumnDef<Record<string, string>>[] = [
+const defaultcolumnData: ColumnDef<Record<string, string>>[] = [
   {
     accessorKey: 'uid',
     header: '',
@@ -70,25 +72,18 @@ const Spreadsheet = () => {
   const router = useRouter();
   const { baseId, userId} = router.query;
   const baseIdString = String(baseId)
-  console.log(baseIdString)
-  //const userIdString = typeof userId === "string" ? userId : (Array.isArray(userId) ? userId[0] : undefined);
 
-  const [initialData, setInitialData] = useState(defaultinitialData);
-  const [columnData, setCols] = useState(defaultcolumnData);
-  const [columnType, setColumnType] = useState(defaultcolumnType);
+  const [columnType, setColumnType] = useState(defaultcolumnType);  
+  const [data, setData] = useState(defaultinitialData);
+  const [columns, setColumnData] = useState(defaultcolumnData);
 
   //might be something wrong with baseIdString
   const { data: base, isLoading, error } = api.base.getBaseById.useQuery({ baseId: baseIdString });
-  console.log(JSON.stringify(base))
   
   useEffect(() => {
     // Only execute if baseIdString and base are valid
-    if (baseIdString && base != undefined && !isLoading) {
-      const dbdata = base.baseData as BaseData ?? {
-        rows: defaultinitialData,
-        cols: defaultcolumnData,
-        types: defaultcolumnType
-      };
+    if (baseIdString!= "undefined" && base != undefined && !isLoading) {
+      const dbdata = base.baseData as BaseData
       
       // Check if rows, cols, and types are defined and have valid values
       const rows = dbdata.rows ?? null;
@@ -96,26 +91,46 @@ const Spreadsheet = () => {
       const types = dbdata.types ?? null;
 
       // Update state only if the data has changed
-      if (rows !== initialData || cols !== columnData || types !== columnType) {
+      if (rows !== data || cols !== columns || types !== columnType) {
         if (rows != null && cols != null && types != null ) {
-          setInitialData(dbdata.rows ?? defaultinitialData);
-          setColumnData(dbdata.cols ?? defaultcolumnData);
-          setColumnType(dbdata.types ?? defaultcolumnType);
+          setData(rows ?? defaultinitialData);
+          setColumnData(cols ?? defaultcolumnData);
+          setColumnType(types ?? defaultcolumnType);
           console.log("Updated data", JSON.stringify(rows, null, 2), cols, types);
         }
       }
     }
   }, [base, baseIdString]);
-  
-
-  const [data, setData] = useState<Record<string, string>[]>(initialData);
-  const [columns, setColumnData] = useState(columnData);
 
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
+
+  // TRPC mutation for updating baseData
+  const updateBaseMutation = api.base.updateBase.useMutation();
+  
+  
+  useEffect(() => {
+    const handler = setTimeout(() => {
+    if (!isLoading && baseIdString != "undefined") {
+      updateBaseMutation.mutate(
+        { baseId: String(baseId), baseData: {rows:data, cols:columns, types: columnType} },
+        {
+          onSuccess: () => {
+            console.log("Base data updated successfully.");
+            console.log(JSON.stringify(data))
+          },
+          onError: (error) => {
+            console.error("Error updating base data:", error.message);
+          },
+        }
+    );
+    }}, 500);
+
+    return () => clearTimeout(handler);
+  }, [data, columns, columnType]); // Trigger only when `data` changes
 
 
   const newRow = () => {
@@ -163,7 +178,6 @@ const Spreadsheet = () => {
       }
 
       columnType[newColId] = "string";
-      console.log(columnType)
 
       return [...prevColumnData, newCol]
     });
@@ -178,7 +192,6 @@ const Spreadsheet = () => {
       }
 
       columnType[newColId] = "integer";
-      console.log(columnType)
 
       return [...prevColumnData, newCol]
     });
@@ -271,14 +284,19 @@ const Spreadsheet = () => {
 
   
   const handleCellEdit = (rowIndex: number, columnId: string, value: string) => {
-    setData((old) =>
-      old.map((row, index) => {
-        if (index === rowIndex) {
-          return { ...row, [columnId]: value };
-        }
-        return row;
-      })
-    );
+    const updatedData = [...data];
+    updatedData[rowIndex] = {
+      ...updatedData[rowIndex],
+      [columnId]: value,
+    };
+    setData((prevData) => {
+      const newData = [...prevData];
+      newData[rowIndex] = {
+        ...newData[rowIndex],
+        [columnId]: value,
+      };
+      return newData
+    });
   };
 
   // Generate table headers with null checks
@@ -382,7 +400,7 @@ const Spreadsheet = () => {
                     <input
                     className='w-[150px] h-[22px] text-xs text-center'
                     type="number"
-                    value={cell.getValue() as string}
+                    value={cell.getValue() as string} // for direct access use: data[row.index]?.[cell.column.id] ?? ""
                     onChange={(e) =>
                         handleCellEdit(row.index, cell.column.id, e.target.value)
                     }
@@ -395,7 +413,7 @@ const Spreadsheet = () => {
                     <input
                     className='w-[150px] h-[22px] text-xs text-center'
                     type="text"
-                    value={cell.getValue() as string}
+                    value={cell.getValue() as string} //for direct access use: data[row.index]?.[cell.column.id] ?? ""
                     onChange={(e) =>
                         handleCellEdit(row.index, cell.column.id, e.target.value)
                     }
@@ -422,6 +440,81 @@ const Spreadsheet = () => {
     return rows;
   };
 
+  // const renderRows = () => {
+  //   const rows = [];
+  
+  //   // Iterate over each row in `initialData`
+  //   initialData.forEach((row, rowIndex) => {
+  //     const cells: JSX.Element[] = [];
+  
+  //     // Iterate over each column in `columnData`
+  //     columnData.forEach((column, cellIndex) => {
+  //       const columnId = column.id; // Assuming columns have an `id` field
+  
+  //       if (cellIndex === 0) {
+  //         // First column with DropDownTwo
+  //         cells.push(
+  //           <td className="border border-gray-300 text-center text-xs" key={columnId}>
+  //             <DropDownTwo
+  //               options={options}
+  //               rowId={String(row.uid)} // Assuming `uid` exists in rows
+  //               text={String(rowIndex + 1)}
+  //             />
+  //           </td>
+  //         );
+  //       } else {
+  //         // Handle other columns based on their type
+  //         if (column.type === "integer") {
+  //           cells.push(
+  //             <td key={columnId} className="border border-gray-300 text-center">
+  //               <input
+  //                 className="w-[150px] h-[22px] text-xs text-center"
+  //                 type="number"
+  //                 value={row[columnId]} // Access row data by column ID
+  //                 onChange={(e) =>
+  //                   handleCellEdit(rowIndex, columnId, e.target.value)
+  //                 }
+  //               />
+  //             </td>
+  //           );
+  //         } else {
+  //           cells.push(
+  //             <td key={columnId} className="border border-gray-300 text-center">
+  //               <input
+  //                 className="w-[150px] h-[22px] text-xs text-center"
+  //                 type="text"
+  //                 value={row[columnId]} // Access row data by column ID
+  //                 onChange={(e) =>
+  //                   handleCellEdit(rowIndex, columnId, e.target.value)
+  //                 }
+  //               />
+  //             </td>
+  //           );
+  //         }
+  //       }
+  //     });
+  
+  //     rows.push(<tr key={rowIndex}>{cells}</tr>);
+  //   });
+  
+  //   // Add the last row for the "Add New Row" button
+  //   rows.push(
+  //     <tr key={initialData.length}>
+  //       <td
+  //         className="border border-gray-300 text-center"
+  //         colSpan={columnData.length}
+  //       >
+  //         <button onClick={newRow} className="text-blue-500">
+  //           +
+  //         </button>
+  //       </td>
+  //     </tr>
+  //   );
+  
+  //   return rows;
+  // };
+  
+
   const options = [
     { label: 'Delete Row', onClick: (rowId: string) => {delRow(rowId)}},
   ];
@@ -429,8 +522,12 @@ const Spreadsheet = () => {
   return (
     <div>
       <table>
-        <thead>{renderHeaders()}</thead>
-        <tbody>{renderRows()}</tbody>
+        {!isLoading && (
+        <>
+          <thead>{renderHeaders()}</thead>
+          <tbody>{renderRows()}</tbody>
+        </>
+      )}
       </table>
     </div>
   );
