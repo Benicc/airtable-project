@@ -55,7 +55,7 @@ const RenameDropdown: React.FC<DropdownProps> = ({ options, baseName}) => {
           
           <input
             className="text-center border border-black w-40 h-8 text-black text-xs"
-            placeholder="Untitled"
+            placeholder="rename"
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
               setNewLabel(event.target.value);
             }}

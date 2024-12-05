@@ -76,7 +76,7 @@ const Navbar = () => {
                                 </Link>
                                 
                                 <div className="flex justify-center item-center">
-                                    <RenameDropdown options={[{label:"Rename", onClick:rename}, {label:"Cancel", onClick:close}]} baseName={baseName}/>
+                                    <RenameDropdown options={[{label:"Save", onClick:rename}, {label:"Cancel", onClick:close}]} baseName={baseName}/>
                                 </div>
                                 <div className="hover:underline text-sm">
                                 Data
