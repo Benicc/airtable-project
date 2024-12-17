@@ -13,7 +13,10 @@ export default function Home() {
 
   const [showPopup, setShowPopup] = useState(false);
   const [isDeletePopupVisible, setDeletePopupVisible] = useState(false);
-  const handleDeletePopupToggle = () => {
+  const [selectedBaseId, setSelectedBaseId] = useState<string>("");
+  
+  const handleDeletePopupToggle = (baseId: string) => {
+    setSelectedBaseId(baseId);
     setDeletePopupVisible(!isDeletePopupVisible);
   };
 
@@ -23,24 +26,24 @@ export default function Home() {
     setShowPopup(!showPopup);
   };
 
-  const { mutate: deleteBase,  isError, isSuccess,} = api.base.deleteBase.useMutation({
-    onSuccess: () => {
-      // Redirect to another page after deletion (e.g., the home page)
-      router.push('/'); // Replace with the path you want to redirect to
-    },
-    onError: (err) => {
-      // Handle the error, maybe show a message
-      console.error('Error deleting base:', err.message);
-    },
-  });
+  // const { mutate: deleteBase,  isError, isSuccess,} = api.base.deleteBase.useMutation({
+  //   onSuccess: () => {
+  //     // Redirect to another page after deletion (e.g., the home page)
+  //     router.push('/'); // Replace with the path you want to redirect to
+  //   },
+  //   onError: (err) => {
+  //     // Handle the error, maybe show a message
+  //     console.error('Error deleting base:', err.message);
+  //   },
+  // });
 
-  const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-  const handleDelete = async (baseId: string) => {
-    deleteBase({ baseId });
+  // const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+  // const handleDelete = async (baseId: string) => {
+  //   deleteBase({ baseId });
     
-    await delay(2000);
-    window.location.reload()
-  };
+  //   await delay(2000);
+  //   //window.location.reload()
+  // };
 
 
   return (
@@ -89,10 +92,11 @@ export default function Home() {
                           {base.baseName}
                         </button>
                       </Link>
-                      <button className="ml-4 p-2 text-red-500" onClick={handleDeletePopupToggle}>
+                      <button className="ml-4 p-2 text-red-500" onClick={() => {handleDeletePopupToggle(base.baseId)}}>
                         Delete
+                        {base.baseId}
                       </button>
-                      <DeletePopup isVisible={isDeletePopupVisible} onClose={handleDeletePopupToggle} deleteBase={() => {handleDelete(base.baseId)}}/>
+                      <DeletePopup isVisible={isDeletePopupVisible} onClose={() => {handleDeletePopupToggle(base.baseId)}} baseId={selectedBaseId}/>
                       {/* <button className="ml-4 border p-2 text-red-500" onClick={() => {handleDelete(base.baseId)}}>
                           delete
                       </button> */}
