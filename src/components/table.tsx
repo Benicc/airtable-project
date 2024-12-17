@@ -229,8 +229,8 @@ const Spreadsheet = () => {
       console.log(prevData)
         const sortedData = [...prevData].sort(
           (a, b) => {
-            const aValue = a[colId] || ''; // Default to empty string if undefined
-            const bValue = b[colId] || ''; // Default to empty string if undefined
+            const aValue = a[colId] ?? ''; // Default to empty string if undefined
+            const bValue = b[colId] ?? ''; // Default to empty string if undefined
       
             // Handle empty strings
             if (aValue === '' && bValue !== '') return 1; // Empty string comes last
@@ -290,8 +290,8 @@ const Spreadsheet = () => {
     setData((prevData) => {
       console.log(prevData);
       const sortedData = [...prevData].sort((a, b) => {
-        const aValue = a[colId] || ''; // Default to empty string if undefined
-        const bValue = b[colId] || ''; // Default to empty string if undefined
+        const aValue = a[colId] ?? ''; // Default to empty string if undefined
+        const bValue = b[colId] ?? ''; // Default to empty string if undefined
   
         // Handle empty strings: Ensure empty values are placed last
         if (aValue === '' && bValue !== '') return 1;  // Empty string comes last
