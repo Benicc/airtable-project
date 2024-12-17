@@ -44,12 +44,18 @@ export default function Home() {
 
 
   return (
-    <div className="flex min-h-screen justify-center items-center">
+    <div className="flex min-h-screen justify-center items-center bg-gray-800">
       <div className="flex flex-col space-y-4 justify-center items-center">
-        <h1 className="text-3xl">Air Table Clone</h1>
-
+        <h1 className="text-3xl text-white font-bold">Air Table Clone</h1>
+        <p className="text-white">Web application replicating the main features of Airtable.</p>
+        {user == null ? (
+          <p className="text-white">Click the button below to login using Discord.</p> 
+        ) : (
+          <p className="text-white">Click the button below to create a new base.</p> 
+        )}
+        
         {user != null && (
-          <button onClick={togglePopup} className="border p-4 text-xl">
+          <button onClick={togglePopup} className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out">
               Create Base
           </button>
 
@@ -67,7 +73,7 @@ export default function Home() {
 
         {user != null && bases!= undefined && bases?.length > 0 &&(
           <div className="mt-6 flex flex-col items-center">
-            <h1 className="text-xl mb-4">Your Bases</h1>
+            <h1 className="text-xl text-white font-bold mb-4">Your Bases</h1>
             <div className="border p-10">
             {isLoading ? (
               <p>Loading...</p>
@@ -79,12 +85,12 @@ export default function Home() {
                   <li key={base.baseId} className="w-[500px]">
                     <div className="flex justify-between w-full">
                       <Link href={`/${base.baseId}`}>
-                        <button className="border p-2 text-blue-500 hover:underline w-full h-full">
+                        <button className="text-white hover:underline w-full h-full">
                           {base.baseName}
                         </button>
                       </Link>
-                      <button className="ml-4 border p-2 text-red-500" onClick={handleDeletePopupToggle}>
-                      delete
+                      <button className="ml-4 p-2 text-red-500" onClick={handleDeletePopupToggle}>
+                        Delete
                       </button>
                       <DeletePopup isVisible={isDeletePopupVisible} onClose={handleDeletePopupToggle} deleteBase={() => {handleDelete(base.baseId)}}/>
                       {/* <button className="ml-4 border p-2 text-red-500" onClick={() => {handleDelete(base.baseId)}}>
@@ -101,9 +107,9 @@ export default function Home() {
         )}
         
         {user == null ? (
-          <button onClick={() => void signIn()}className="border p-2 text-xl">Login</button>
+          <button onClick={() => void signIn()}className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full transition ease-out duration-300">Login</button>
           ):(
-              <button onClick={() => void signOut()} className="border p-2 text-xl">Log Out</button>
+              <button onClick={() => void signOut()} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full transition ease-out duration-300">Log Out</button>
           )
         }
         

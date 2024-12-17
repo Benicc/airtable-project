@@ -15,13 +15,18 @@ export const baseRouter = createTRPCRouter({
         const { baseName, baseData} = input;
         const baseId = String(uuidv4());
         // console.log("++++++++++++" + JSON.stringify(baseData))
+        let baseNameTemp = baseName 
+
+        if (baseNameTemp.trim() == "") {
+          baseNameTemp = "Untitled"
+        }
   
         // Create a new Base in the database
         const newBase = await ctx.db.base.create({
           data: {
             baseId,
             userId: ctx.session.user.id,
-            baseName,
+            baseName: baseNameTemp,
             baseData,
           },
         });

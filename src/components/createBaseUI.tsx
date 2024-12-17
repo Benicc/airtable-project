@@ -88,8 +88,8 @@ const Popup: React.FC<PopupProps> = ({ onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
-      <div className="flex flex-col justify-between h-[300px] bg-white p-8 rounded-lg shadow-lg">
-        <h1 className="text-3xl"> Create New Base</h1>
+      <div className="flex flex-col justify-between h-[250px] bg-white p-8 rounded-lg shadow-lg">
+        <h1 className="text-xl font-bold">New Base</h1>
 
         <input 
           type="text" 
@@ -100,9 +100,9 @@ const Popup: React.FC<PopupProps> = ({ onClose }) => {
         />
 
 
-        <div className="flex justify-between items-center w-[550px]">
-            <button onClick={onClose} className="border p-2 text-xl">Cancel</button>
-            <button onClick={handleCreateBase} className="border p-2 text-xl">Create</button>
+        <div className="flex justify-between items-center w-[400px]">
+            <button onClick={onClose} className="border border-2 px-4 py-2">Cancel</button>
+            <button onClick={handleCreateBase} className="border border-2 px-4 py-2">Create</button>
         </div>
       </div>
     </div>
