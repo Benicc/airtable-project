@@ -114,7 +114,7 @@ export default function Home() {
         {user == null ? (
           <button onClick={() => void signIn()}className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full transition ease-out duration-300">Login</button>
           ):(
-              <button onClick={() => void signOut()} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full transition ease-out duration-300">Log Out</button>
+              <button onClick={() => void signOut()} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full transition ease-out duration-300">Logout</button>
           )
         }
         
