@@ -14,9 +14,11 @@ export default function Home() {
   const [showPopup, setShowPopup] = useState(false);
   const [isDeletePopupVisible, setDeletePopupVisible] = useState(false);
   const [selectedBaseId, setSelectedBaseId] = useState<string>("");
+  const [selectedBaseName, setSelectedBaseName] = useState<string>("");
   
-  const handleDeletePopupToggle = (baseId: string) => {
+  const handleDeletePopupToggle = (baseId: string, baseName: string) => {
     setSelectedBaseId(baseId);
+    setSelectedBaseName(baseName);
     setDeletePopupVisible(!isDeletePopupVisible);
   };
 
@@ -92,11 +94,10 @@ export default function Home() {
                           {base.baseName}
                         </button>
                       </Link>
-                      <button className="ml-4 p-2 text-red-500" onClick={() => {handleDeletePopupToggle(base.baseId)}}>
+                      <button className="ml-4 p-2 text-red-500" onClick={() => {handleDeletePopupToggle(base.baseId, base.baseName)}}>
                         Delete
-                        {base.baseId}
                       </button>
-                      <DeletePopup isVisible={isDeletePopupVisible} onClose={() => {handleDeletePopupToggle(base.baseId)}} baseId={selectedBaseId}/>
+                      <DeletePopup isVisible={isDeletePopupVisible} onClose={() => {handleDeletePopupToggle(base.baseId, base.baseName)}} baseId={selectedBaseId} baseName={selectedBaseName}/>
                       {/* <button className="ml-4 border p-2 text-red-500" onClick={() => {handleDelete(base.baseId)}}>
                           delete
                       </button> */}
