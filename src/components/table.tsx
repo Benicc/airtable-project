@@ -229,12 +229,17 @@ const Spreadsheet = () => {
       console.log(prevData)
         const sortedData = [...prevData].sort(
           (a, b) => {
-            if (a[colId] !== undefined && b[colId] !== undefined) {
-              if (a[colId] < b[colId]) return -1;  // a comes before b
-              if (a[colId] > b[colId]) return 1;   // a comes after b
-              return 0;                       // a and b are equal
-            }
-            return 0;
+            const aValue = a[colId] || ''; // Default to empty string if undefined
+            const bValue = b[colId] || ''; // Default to empty string if undefined
+      
+            // Handle empty strings
+            if (aValue === '' && bValue !== '') return 1; // Empty string comes last
+            if (aValue !== '' && bValue === '') return -1; // Non-empty string comes before empty string
+      
+            // Compare non-empty strings as usual
+            if (aValue < bValue) return -1;
+            if (aValue > bValue) return 1;
+            return 0; // a and b are equal
           }
         );
       console.log(sortedData)
@@ -245,57 +250,62 @@ const Spreadsheet = () => {
 
   const sortFirsttoLast = (colId: string) => {
     setData((prevData) => {
-      console.log(prevData)
-        const sortedData = [...prevData].sort(
-          (a, b) => {
-            if (a[colId] !== undefined && b[colId] !== undefined) {
-              if (parseInt(a[colId], 10) < parseInt(b[colId], 10)) return -1;  // a comes before b
-              if (parseInt(a[colId], 10) > parseInt(b[colId], 10)) return 1;   // a comes after b
-              return 0;                       // a and b are equal
-            }
-            return 0;
-          }
-        );
-      console.log(sortedData)
-      return sortedData
-    }); 
-  }
+      console.log(prevData);
+      const sortedData = [...prevData].sort((a, b) => {
+        const aValue = a[colId] !== undefined && a[colId] !== '' ? parseInt(a[colId], 10) : Infinity; // Use Infinity for empty values
+        const bValue = b[colId] !== undefined && b[colId] !== '' ? parseInt(b[colId], 10) : Infinity; // Use Infinity for empty values
+  
+        // Compare and handle empty values
+        if (aValue === Infinity && bValue !== Infinity) return 1;  // Empty comes last
+        if (aValue !== Infinity && bValue === Infinity) return -1; // Non-empty comes before empty
+        if (aValue < bValue) return -1;  // a comes before b
+        if (aValue > bValue) return 1;   // a comes after b
+        return 0; // a and b are equal
+      });
+      console.log(sortedData);
+      return sortedData;
+    });
+  };
 
   const sortLasttoFirst = (colId: string) => {
     setData((prevData) => {
-      console.log(prevData)
-        const sortedData = [...prevData].sort(
-          (a, b) => {
-            if (a[colId] !== undefined && b[colId] !== undefined) {
-              if (parseInt(a[colId], 10) > parseInt(b[colId], 10)) return -1;  // a comes before b
-              if (parseInt(a[colId], 10) < parseInt(b[colId], 10)) return 1;   // a comes after b
-              return 0;                       // a and b are equal
-            }
-            return 0;
-          }
-        );
-      console.log(sortedData)
-      return sortedData
-    }); 
-  }
+      console.log(prevData);
+      const sortedData = [...prevData].sort((a, b) => {
+        const aValue = a[colId] !== undefined && a[colId] !== '' ? parseInt(a[colId], 10) : -Infinity; // Use -Infinity for empty values
+        const bValue = b[colId] !== undefined && b[colId] !== '' ? parseInt(b[colId], 10) : -Infinity; // Use -Infinity for empty values
+  
+        // Compare and handle empty values
+        if (aValue === -Infinity && bValue !== -Infinity) return 1;  // Empty comes last
+        if (aValue !== -Infinity && bValue === -Infinity) return -1; // Non-empty comes before empty
+        if (aValue > bValue) return -1;  // a comes before b (descending)
+        if (aValue < bValue) return 1;   // a comes after b (descending)
+        return 0; // a and b are equal
+      });
+      console.log(sortedData);
+      return sortedData;
+    });
+  };
 
   const sortZtoA = (colId: string) => {
     setData((prevData) => {
-      console.log(prevData)
-        const sortedData = [...prevData].sort(
-          (a, b) => {
-            if (a[colId] !== undefined && b[colId] !== undefined) {
-              if (a[colId] > b[colId]) return -1;  // a comes before b
-              if (a[colId] < b[colId]) return 1;   // a comes after b
-              return 0;                       // a and b are equal
-            }
-            return 0;
-          }
-        );
-      console.log(sortedData)
-      return sortedData
-    }); 
-  }
+      console.log(prevData);
+      const sortedData = [...prevData].sort((a, b) => {
+        const aValue = a[colId] || ''; // Default to empty string if undefined
+        const bValue = b[colId] || ''; // Default to empty string if undefined
+  
+        // Handle empty strings: Ensure empty values are placed last
+        if (aValue === '' && bValue !== '') return 1;  // Empty string comes last
+        if (aValue !== '' && bValue === '') return -1; // Non-empty string comes before empty string
+  
+        // Compare non-empty strings in descending order
+        if (aValue > bValue) return -1; // a comes before b (descending)
+        if (aValue < bValue) return 1;  // a comes after b (descending)
+        return 0; // a and b are equal
+      });
+      console.log(sortedData);
+      return sortedData;
+    });
+  };
 
   
   const handleCellEdit = (rowIndex: number, columnId: string, value: string) => {
