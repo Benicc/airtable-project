@@ -1,125 +1,125 @@
 import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
-import router from "next/router";
 import { useState } from "react";
 import Popup from "~/components/createBaseUI";
 import DeletePopup from "~/components/deletepopup";
 import { api } from "~/utils/api";
 
-
 export default function Home() {
-  const session = useSession()
-  const user = session.data?.user
+  const session = useSession();
+  const user = session.data?.user;
 
   const [showPopup, setShowPopup] = useState(false);
   const [isDeletePopupVisible, setDeletePopupVisible] = useState(false);
   const [selectedBaseId, setSelectedBaseId] = useState<string>("");
   const [selectedBaseName, setSelectedBaseName] = useState<string>("");
-  
+
   const handleDeletePopupToggle = (baseId: string, baseName: string) => {
     setSelectedBaseId(baseId);
     setSelectedBaseName(baseName);
-    setDeletePopupVisible(!isDeletePopupVisible);
+    setDeletePopupVisible(true);
   };
 
   const { data: bases, isLoading, error } = api.base.getAllBaseIds.useQuery();
 
-  const togglePopup = () => {
-    setShowPopup(!showPopup);
-  };
-
-  // const { mutate: deleteBase,  isError, isSuccess,} = api.base.deleteBase.useMutation({
-  //   onSuccess: () => {
-  //     // Redirect to another page after deletion (e.g., the home page)
-  //     router.push('/'); // Replace with the path you want to redirect to
-  //   },
-  //   onError: (err) => {
-  //     // Handle the error, maybe show a message
-  //     console.error('Error deleting base:', err.message);
-  //   },
-  // });
-
-  // const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-  // const handleDelete = async (baseId: string) => {
-  //   deleteBase({ baseId });
-    
-  //   await delay(2000);
-  //   //window.location.reload()
-  // };
-
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
+        <div className="bg-white rounded-2xl shadow-lg p-12 max-w-sm w-full mx-4 text-center">
+          <div className="w-14 h-14 bg-blue-600 rounded-xl flex items-center justify-center mx-auto mb-6">
+            <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M3 6h18M3 14h12M3 18h8" />
+            </svg>
+          </div>
+          <h1 className="text-2xl font-bold text-slate-900 mb-2">Airtable Clone</h1>
+          <p className="text-slate-500 mb-8 text-sm">Organize anything, together.</p>
+          <button
+            onClick={() => void signIn()}
+            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+          >
+            Sign in with Discord
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex min-h-screen justify-center items-center bg-gray-800">
-      <div className="flex flex-col space-y-4 justify-center items-center">
-        <h1 className="text-3xl text-white font-bold">Air Table Clone</h1>
-        <p className="text-white">Web application replicating the main features of Airtable.</p>
-        {user == null ? (
-          <p className="text-white">Click the button below to login using Discord.</p> 
-        ) : (
-          <p className="text-white">Click the button below to create a new base.</p> 
-        )}
-        
-        {user != null && (
-          <button onClick={togglePopup} className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out">
-              Create Base
-          </button>
-
-        )}
-
-        {/* {user != null && (
-          <Link href="/base">
-            <button className="border p-2 text-xl">Test Base</button>
-          </Link>
-        )} */}
-
-        {showPopup && (
-          <Popup onClose={togglePopup}/>
-        )}
-
-        {user != null && bases!= undefined && bases?.length > 0 &&(
-          <div className="mt-6 flex flex-col items-center">
-            <h1 className="text-xl text-white font-bold mb-4">Your Bases</h1>
-            <div className="border p-10">
-            {isLoading ? (
-              <p>Loading...</p>
-            ) : error ? (
-              <p>Error loading bases</p>
-            ) : (
-              <ul className="space-y-2">
-                {bases?.map((base) => (
-                  <li key={base.baseId} className="w-[500px]">
-                    <div className="flex justify-between w-full">
-                      <Link href={`/${base.baseId}`}>
-                        <button className="text-white hover:underline w-full h-full">
-                          {base.baseName}
-                        </button>
-                      </Link>
-                      <button className="ml-4 p-2 text-red-500" onClick={() => {handleDeletePopupToggle(base.baseId, base.baseName)}}>
-                        Delete
-                      </button>
-                      <DeletePopup isVisible={isDeletePopupVisible} onClose={() => {handleDeletePopupToggle(base.baseId, base.baseName)}} baseId={selectedBaseId} baseName={selectedBaseName}/>
-                      {/* <button className="ml-4 border p-2 text-red-500" onClick={() => {handleDelete(base.baseId)}}>
-                          delete
-                      </button> */}
-                    </div>
-          
-                  </li>
-                ))}
-              </ul>
+    <div className="min-h-screen bg-slate-50">
+      <header className="bg-white border-b border-slate-200">
+        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+          <span className="font-bold text-slate-900 text-lg">Airtable Clone</span>
+          <div className="flex items-center gap-3">
+            {user.image && (
+              <img src={user.image} alt={user.name ?? ""} className="w-8 h-8 rounded-full" />
             )}
-            </div>
+            <span className="text-sm text-slate-600">{user.name}</span>
+            <button
+              onClick={() => void signOut()}
+              className="text-sm text-slate-400 hover:text-slate-700 transition-colors ml-2"
+            >
+              Sign out
+            </button>
+          </div>
         </div>
-        )}
-        
-        {user == null ? (
-          <button onClick={() => void signIn()}className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full transition ease-out duration-300">Login</button>
-          ):(
-              <button onClick={() => void signOut()} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full transition ease-out duration-300">Logout</button>
-          )
-        }
-        
-      </div>
+      </header>
 
+      <main className="max-w-6xl mx-auto px-6 py-10">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-lg font-semibold text-slate-900">Your Bases</h2>
+          <button
+            onClick={() => setShowPopup(true)}
+            className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors duration-200"
+          >
+            + New Base
+          </button>
+        </div>
+
+        {isLoading ? (
+          <p className="text-slate-400 text-sm">Loading...</p>
+        ) : error ? (
+          <p className="text-red-500 text-sm">Error loading bases.</p>
+        ) : !bases?.length ? (
+          <div className="text-center py-24 text-slate-400">
+            <p className="text-base">No bases yet.</p>
+            <p className="text-sm mt-1">Click &ldquo;+ New Base&rdquo; to get started.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {bases.map((base) => (
+              <div
+                key={base.baseId}
+                className="bg-white rounded-xl border border-slate-200 hover:shadow-md transition-shadow duration-200 overflow-hidden"
+              >
+                <Link href={`/${base.baseId}`} className="block p-5">
+                  <div className="w-10 h-10 bg-blue-50 rounded-lg mb-4 flex items-center justify-center">
+                    <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M3 6h18M3 14h12M3 18h8" />
+                    </svg>
+                  </div>
+                  <p className="font-medium text-slate-800 truncate">{base.baseName}</p>
+                </Link>
+                <div className="px-5 pb-4 border-t border-slate-100 pt-3">
+                  <button
+                    onClick={() => handleDeletePopupToggle(base.baseId, base.baseName)}
+                    className="text-xs text-slate-400 hover:text-red-500 transition-colors"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </main>
+
+      {showPopup && <Popup onClose={() => setShowPopup(false)} />}
+      <DeletePopup
+        isVisible={isDeletePopupVisible}
+        onClose={() => setDeletePopupVisible(false)}
+        baseId={selectedBaseId}
+        baseName={selectedBaseName}
+      />
     </div>
   );
 }
